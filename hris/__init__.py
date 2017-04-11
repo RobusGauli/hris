@@ -43,11 +43,14 @@ def create_app(config_name=None, main=True):
     
     #regster the teardown context function
     app.teardown_appcontext(shutdown_session)
-
+    #register the blueprints
     from hris.api import api as api_blueprint
     app.register_blueprint(api_blueprint, url_prefix='/api')
 
     #initialize flask extensio
+
+    #register the errohandler
+    
     
     return app
 
