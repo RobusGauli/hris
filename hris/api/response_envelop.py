@@ -84,9 +84,9 @@ def record_created_envelop(data, code=201):
 def records_json_envelop(records, *, code=200):
     
     return jsonify({
-        'data' : list(dict(zip(record.keys(), record.values())) for record in records),
+        'data' : records,
         'code' : code,
-        'message' : ALL_STATUS_CODES.get(code, 'Not found'),
+        'message' : ALL_STATUS_CODES.get(code, 'Not found').decode(),
         'status' : 'success'
 
     })
@@ -105,7 +105,7 @@ def record_json_envelop(record, *, code=200):
 
 def record_updated_envelop(record, *, code=200):
     return jsonify({
-        'data' : dict(record),
+        'data' : record,
         'code' : code,
         'message' : 'updated successfully',
         'status': 'success'
@@ -154,7 +154,7 @@ def fatal_error_envelop(code=500):
     return jsonify({
         'data' : {},
         'code' : code, 
-        'message' : ALL_STATUS_CODES.get(code, 'Not found'),
+        'message' : ALL_STATUS_CODES.get(code, 'Not found').decode(),
         'status' : 'fail'
     })
 

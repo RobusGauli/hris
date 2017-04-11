@@ -39,6 +39,7 @@ class User(Base):
     updated_by = Column(String(20))
     role_id  = Column(Integer, ForeignKey('roles.id'))
     activate = Column(Boolean, default=False)
+    #employee_id
 
 
     #relationship
@@ -101,6 +102,7 @@ class FacilityType(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(200), unique=True, nullable=False)
+    display_name = Column(String(200), nullable=False)
 
     branches = relationship('Branch', back_populates='facility_type', cascade='all, delete, delete-orphan')
 
@@ -111,7 +113,9 @@ class LLG(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(100), unique=True, nullable=False)
+    display_name = Column(String(200))
     branches = relationship('Branch', back_populates='llg', cascade='all, delete, delete-orphan')
+
 
 
 class District(Base):
@@ -119,6 +123,7 @@ class District(Base):
     
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(100), unique=True, nullable=False)
+    display_name = Column(String(200))
     branches = relationship('Branch', back_populates='district', cascade='all, delete, delete-orphan')
 
 class Province(Base):
@@ -126,6 +131,7 @@ class Province(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(100), unique=True, nullable=False)
+    display_name = Column(String(200))
     branches = relationship('Branch', back_populates='province', cascade='all, delete, delete-orphan')
 
 class Region(Base):
@@ -133,6 +139,7 @@ class Region(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(100), unique=True, nullable=False)
+    display_name = Column(String(200))
     branches = relationship('Branch', back_populates='region', cascade='all, delete, delete-orphan')
 
 

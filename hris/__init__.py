@@ -19,7 +19,7 @@ from config import config
 
 #flask extension
 #start the engine
-engine = create_engine('postgres://user:postgres@localhost:5432/second')
+engine = create_engine('postgres://user:postgres@localhost:5432/tree')
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))
@@ -58,3 +58,4 @@ def create_app(config_name=None, main=True):
 def init_db():
     from hris import models
     Base.metadata.create_all(engine)
+

@@ -1,4 +1,4 @@
-from hris.utils import hash_password, gen_access_token, decode_access_token, can_edit_permit
+from hris.utils import hash_password, gen_access_token, decode_access_token
 from flask import request, abort, jsonify, g
 from functools import wraps
 
@@ -6,6 +6,10 @@ from hris.api import api
 from sqlalchemy.exc import IntegrityError #foreign key violation #this won't come up oftern
 from sqlalchemy.orm.exc import NoResultFound
 from hris import db_session
+
+#auth
+from hris.api.auth import can_edit_permit
+###
 from hris.models import (
     User, 
     CompanyDetail
@@ -59,8 +63,12 @@ def register_user():
             return jsonify({'message' : 'user_added_successfully', 'access_token' : user_access_token.decode('utf-8')})
 
     elif request.args['action'] == 'login':
-        if not set(request.json.keys()) == {'user_name', 'password'}:
-            return jsonify({'message' : 'missing keys'})
+        if request.json:
+            if not set(request.json.keys()) == {'user_name', 'password'}:
+                return jsonify({'message' : 'missing keys'})
+        else:
+            return jsonify({'message': 'json object'})
+
         user_name = request.json['user_name']
         password = request.json['password']
 
