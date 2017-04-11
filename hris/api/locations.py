@@ -242,7 +242,7 @@ def update_facility(id):
     except NoResultFound as e:
         abort(404)
     except Exception as e:
-        raise 
+         
         abort(500)
     else:
         return record_updated_envelop(request.json)
@@ -270,7 +270,7 @@ def update_llg(id):
     except NoResultFound as e:
         abort(404)
     except Exception as e:
-        raise 
+        
         abort(500)
     else:
         return record_updated_envelop(request.json)
@@ -298,7 +298,7 @@ def update_district(id):
     except NoResultFound as e:
         abort(404)
     except Exception as e:
-        raise 
+        
         abort(500)
     else:
         return record_updated_envelop(request.json)
@@ -327,7 +327,7 @@ def update_province(id):
     except NoResultFound as e:
         abort(404)
     except Exception as e:
-        raise 
+         
         abort(500)
     else:
         return record_updated_envelop(request.json)
@@ -355,7 +355,7 @@ def update_region(id):
     except NoResultFound as e:
         abort(404)
     except Exception as e:
-        raise 
+        
         abort(500)
     else:
         return record_updated_envelop(request.json)
@@ -382,4 +382,9 @@ def notfound(error):
 
 @api.errorhandler(500)
 def servererror(error):
-    return fatal_error_envelop(), 500 
+    return fatal_error_envelop(), 500
+
+@api.errorhandler(411)
+def lengthrequired(error):
+    return length_require_envelop(), 411 
+

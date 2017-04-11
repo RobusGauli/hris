@@ -97,7 +97,7 @@ def records_json_envelop(records, *, code=200):
 def record_json_envelop(record, *, code=200):
     
     return jsonify({
-        'data' : dict(record),
+        'data' : record,
         'code' : code,
         'message' : ALL_STATUS_CODES.get(code, 'Not found').decode(),
         'status': 'success'
@@ -145,7 +145,7 @@ def bad_request_envelop(code=400):
     return jsonify({
         'data' : {},
         'code' : code,
-        'message' : ALL_STATUS_CODES.get(code, 'Not found'),
+        'message' : ALL_STATUS_CODES.get(code, 'Not found').decode(),
         'status': ' fail'
     })
 
@@ -168,12 +168,12 @@ def missing_keys_envelop(code=400):
         }
     )
 
-def length_require_envelop(message=None, code=400):
+def length_require_envelop(message=None, code=411):
     return jsonify(
         {
             'data' : {}, 
             'code' : code, 
-            'message' : message if message else 'Not sufficient length',
+            'message' : message if message else 'Not sufficient length of values',
             'status' : 'fail'
         }
     )
