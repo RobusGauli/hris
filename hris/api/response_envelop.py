@@ -112,9 +112,9 @@ def record_updated_envelop(record, *, code=200):
     })
 
 
-def record_not_updated_env(code=400):
+def record_not_updated_env(message='',code=400):
     return jsonify({
-        'data' : {},
+        'data' : message,
         'code' : code,
         'message' : 'couldn\'t update',
         'status' : 'fail'
