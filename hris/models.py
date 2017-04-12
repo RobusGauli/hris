@@ -98,6 +98,10 @@ class Branch(Base):
     province = relationship('Province', back_populates='branches')
     region = relationship('Region', back_populates='branches')
 
+    #realiationhsip
+    employees = relationship('Employee', back_populates='employee_branch', cascade='all, delete, delete-orphan')
+    
+
 
 
 class FacilityType(Base):
@@ -209,6 +213,8 @@ class Employee(Base):
     email_address = Column(String(100), unique=True)
     contact_number = Column(String(20), unique=True)
     alt_contact_number = Column(String(20), unique=True)
+    age = Column(Integer, nullable=False)
+    retirement_age = Column(Integer, nullable=False, default=50)
 
     employement_number = Column(Integer, unique=True)
     salary_step = Column(String(6))
@@ -226,8 +232,13 @@ class Employee(Base):
     photo = Column(String(500), unique=True)
     document = Column(String(500), unique=True)
 
-    employee_type_id = Column(Integer, ForeignKey('emp_types.id'))
-    employee_category_id = Column(Integer, ForeignKey('emp_categories.id'))
+    #branch_id_of_employee
+    employee_branch_id = Column(Integer, ForeignKey('branches.id'))
+    #relationship
+    employee_branch = relationship('Branch', back_populates='employees')
+
+    employee_type_id = Column(Integer, ForeignKey('emp_types.id'), nullable=False)
+    employee_category_id = Column(Integer, ForeignKey('emp_categories.id'), nullable=False)
 
     #one to one with users table
     user_id = Column(Integer, ForeignKey('users.id'), unique=True)
@@ -237,8 +248,8 @@ class Employee(Base):
     employee_extra = relationship('EmployeeExtra', uselist=False, back_populates='employee')
 
     #relationship 
-    employee_type = relationship('EmployeeType', back_populates='employees', nullable=False)
-    employee_category = relationship('EmployeeCategory', back_populates='employees', nullable=False)
+    employee_type = relationship('EmployeeType', back_populates='employees')
+    employee_category = relationship('EmployeeCategory', back_populates='employees')
     
     #other relationship
     qualifications = relationship('Qualification', back_populates='employee', cascade='all, delete, delete-orphan')
