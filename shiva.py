@@ -3,4 +3,4 @@ from flask_cors import CORS, cross_origin
 
 app = create_app()
 CORS(app)
-app.run(host='0.0.0.0', port=5000, debug=True)
+app.run(host='0.0.0.0', port=3000, debug=False)

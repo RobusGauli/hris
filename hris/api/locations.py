@@ -241,6 +241,8 @@ def update_facility(id):
         db_session.commit()
     except NoResultFound as e:
         abort(404)
+    except IntegrityError as e:
+        return record_exists_envelop()
     except Exception as e:
          
         abort(500)
@@ -269,6 +271,8 @@ def update_llg(id):
         db_session.commit()
     except NoResultFound as e:
         abort(404)
+    except IntegrityError as e:
+        return record_exists_envelop()
     except Exception as e:
         
         abort(500)
@@ -297,8 +301,9 @@ def update_district(id):
         db_session.commit()
     except NoResultFound as e:
         abort(404)
+    except IntegrityError as e:
+        return record_exists_envelop()
     except Exception as e:
-        
         abort(500)
     else:
         return record_updated_envelop(request.json)
@@ -326,6 +331,8 @@ def update_province(id):
         db_session.commit()
     except NoResultFound as e:
         abort(404)
+    except IntegrityError as e:
+        return record_exists_envelop()
     except Exception as e:
          
         abort(500)
@@ -354,6 +361,8 @@ def update_region(id):
         db_session.commit()
     except NoResultFound as e:
         abort(404)
+    except IntegrityError as e:
+        return record_exists_envelop()
     except Exception as e:
         
         abort(500)
