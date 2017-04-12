@@ -85,4 +85,93 @@ def get_emp_cat_ranks():
 
 
 
-#@api.route('')
+@api.route('/empcategoryranks/<int:rank_id>/empcategories', methods=['POST'])
+@can_edit_permit
+def create_emp_cat(rank_id):
+    if not request.json:
+        abort(400)
+    if not 'name' in request.json.keys():
+        abort(401)
+    
+    if len(request.json['name'].strip()) < 2:
+        abort(411)
+    
+    #strip down the values
+    display_name = request.json['name'].strip()
+    name = display_name.lower()
+    emp_cat_rank_id = rank_id
+
+    #try to put onto database
+    try:
+        cat = EmployeeCategory(name=name, display_name=display_name, emp_cat_rank_id=emp_cat_rank_id)
+        db_session.add(cat)
+        db_session.commit()
+    except IntegrityError as e:
+        return record_exists_envelop()
+    except Exception as e:
+        return fatal_error_envelop()
+    else:
+        return record_created_envelop(request.json)
+
+
+@api.route('/empcategories', methods=['GET'])
+@can_edit_permit
+def get_emp_categories():
+
+    try:
+        ranks = db_session.query(EmployeeCategory).order_by(EmployeeCategory.name).all()
+        rks = (dict(id=rank.id, name=rank.display_name, emp_cat_rank=rank.emp_cat_rank.name)
+                                                                          for rank in ranks)
+    except ResultNotFound as e:
+        return record_notfound_envelop()
+    except Exception as e:
+        return fatal_error_envelop()
+    else:
+        return records_json_envelop(list(rks))
+        
+
+
+
+@api.route('/employeetypes', methods=['POST'])
+@can_edit_permit
+def create_employee_type():
+
+    if not request.json:
+        abort(400)
+    
+    if not 'name' in request.json.keys():
+        abort(401)
+    
+    if len(request.json['name'].strip()) < 2:
+        abort(411)
+    
+    #clear up the values
+    display_name = request.json['name'].strip()
+    name = display_name.lower()
+
+    try:
+        e_type = EmployeeType(name=name, display_name=display_name)
+        db_session.add(e_type)
+        db_session.commit()
+    except IntegrityError as e:
+        return record_exists_envelop()
+    except Exception as e:
+        return fatal_error_envelop()
+    else:
+        return record_created_envelop(request.json) 
+    
+
+@api.route('/employeetypes', methods=['GET'])
+@can_edit_permit
+def get_employee_types():
+
+    try:
+        types = db_session.query(EmployeeType).all()
+        tys = (dict(id=ty.id, name=ty.display_name) for ty in types)
+    except ResultNotFound as e:
+        return record_notfound_envelop()
+    except Exception as e:
+        return fatal_error_envelop()
+    else:
+        return records_json_envelop(list(tys))
+    
