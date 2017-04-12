@@ -196,8 +196,10 @@ class Employee(Base):
     first_name = Column(String(40), nullable=False)
     middle_name = Column(String(40))
     last_name = Column(String(40), nullable=False)
-    sex = Column( Enum('M', 'F', 'O', name='sex'))
+    sex = Column( Enum('M', 'F', 'O', name='sex'), nullable=False)
     date_of_birth = Column(Date)
+    address_one = Column(String(50), nullable=False)
+    address_two = Column(String(50))
     village = Column(String(100))
     llg = Column(String(100))
     district = Column(String(100))
@@ -206,11 +208,16 @@ class Employee(Base):
     country = Column(String(40))
     email_address = Column(String(100), unique=True)
     contact_number = Column(String(20), unique=True)
+    alt_contact_number = Column(String(20), unique=True)
 
     employement_number = Column(Integer, unique=True)
     salary_step = Column(String(6))
     date_of_commencement = Column(Date)
     contract_end_date = Column(Date)
+
+    #about del flag
+    del_flag = Column(Boolean, default=False)
+
 
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
@@ -223,18 +230,40 @@ class Employee(Base):
     employee_category_id = Column(Integer, ForeignKey('emp_categories.id'))
 
     #one to one with users table
-    user_id = Column(Integer, ForeignKey('users.id'))
+    user_id = Column(Integer, ForeignKey('users.id'), unique=True)
     user = relationship('User', back_populates='employee')
 
+    #one to one with employeeextra table
+    employee_extra = relationship('EmployeeExtra', uselist=False, back_populates='employee')
+
     #relationship 
-    employee_type = relationship('EmployeeType', back_populates='employees')
-    employee_category = relationship('EmployeeCategory', back_populates='employees')
+    employee_type = relationship('EmployeeType', back_populates='employees', nullable=False)
+    employee_category = relationship('EmployeeCategory', back_populates='employees', nullable=False)
     
     #other relationship
     qualifications = relationship('Qualification', back_populates='employee', cascade='all, delete, delete-orphan')
     certifications = relationship('Certification', back_populates='employee', cascade='all, delete, delete-orphan')
     trainings = relationship('Training', back_populates='employee', cascade='all, delete, delete-orphan')
-    
+
+
+class EmployeeExtra(Base):
+    __tablename__ = 'employee_extra'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    employee_id = Column(Integer, ForeignKey('employees.id'), unique=True)
+
+    ref_name = Column(String(40))
+    ref_address = Column(String(40))
+    ref_contact_number = Column(String(20))
+    emp_father_name = Column(String(40))
+    emp_mother_name = Column(String(40))
+    emp_single = Column(Boolean, default=True)
+    emp_wife_name = Column(String(40))
+    emp_num_of_children = Column(Integer)
+
+    #relationship
+    employee = relationship('Employee', back_populates='employee_extra')
+
 class Qualification(Base):
     __tablename__ = 'qualifications'
 
