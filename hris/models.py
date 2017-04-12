@@ -100,7 +100,7 @@ class Branch(Base):
 
     #realiationhsip
     employees = relationship('Employee', back_populates='employee_branch', cascade='all, delete, delete-orphan')
-    
+
 
 
 
@@ -200,8 +200,8 @@ class Employee(Base):
     first_name = Column(String(40), nullable=False)
     middle_name = Column(String(40))
     last_name = Column(String(40), nullable=False)
-    sex = Column( Enum('M', 'F', 'O', name='sex'), nullable=False)
-    date_of_birth = Column(Date)
+    sex = Column(Enum('M', 'F', 'O', name='sex'), nullable=False)
+    date_of_birth = Column(Date, nullable=False)
     address_one = Column(String(50), nullable=False)
     address_two = Column(String(50))
     village = Column(String(100))
@@ -233,7 +233,7 @@ class Employee(Base):
     document = Column(String(500), unique=True)
 
     #branch_id_of_employee
-    employee_branch_id = Column(Integer, ForeignKey('branches.id'))
+    employee_branch_id = Column(Integer, ForeignKey('branches.id'), nullable=False)
     #relationship
     employee_branch = relationship('Branch', back_populates='employees')
 
