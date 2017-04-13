@@ -406,7 +406,7 @@ def create_training_by_emp(id):
 @can_edit_permit
 def get_trainings_by_emp(id):
     try:
-        trs = db_session.query(Training).filter(Traning.employee_id==id).all()
+        trs = db_session.query(Training).filter(Training.employee_id==id).all()
     except NoResultFound as e:
         return record_notfound_envelop()
     except Exception as e:
@@ -418,10 +418,45 @@ def get_trainings_by_emp(id):
             'organiser_name' : q.organiser_name if q.organiser_name else '',
             'funding_source' : q.funding_source if q.funding_source else '',
             'duration' : q.duration if q.duration else '',
-            'institute' : q.institute if q.institute else '',
+            'institute' : q.institue if q.institue else '',
             'duration' : q.duration if q.duration else '',
             'city' : q.city if q.city else '',
             'state' : q.state if q.state else '',
             'province' : q.province if q.province else ''            
         } for q in trs)
         return records_json_envelop(list(trs))
+
+
+@api.route('/employees/<int:emp_id>/trainings/<int:t_id>', methods=['PUT'])
+@can_edit_permit
+def update_training_by_emp(emp_id, t_id):
+    if not request.json:
+        abort(400)
+    #check to see if there is any empty values
+    if not all(len(str(val).strip()) for val in request.json.values()):
+        abort(411)
+    #check to see if the request has the right type of keys
+    result = request.json.keys() - set(col.name for col in Training.__mapper__.columns)
+    if result:
+        
+        return extra_keys_envelop('Keys: {!r} not accepted'.format(', '.join(r for r in result)))
+    
+    #clearn up the values for string
+    #generator expression
+    cleaned_json = ((key, val.strip()) if isinstance(val, str) else (key, val) for key, val in request.json.items())
+        #this means that it has extra set of keys that is not necessary
+    #make the custom query
+    inner = ', '.join('{:s} = {!r}'.format(key, val) for key, val in cleaned_json)
+    query = '''UPDATE trainings SET {:s} WHERE id = {:d}'''.format(inner, t_id)
+    
+
+    #try to executre
+    with engine.connect() as con:
+        try:
+            con.execute(query)
+        except IntegrityError as e:
+            return record_exists_envelop()
+        except Exception as e:
+            return fatal_error_envelop()
+        else:
+            return record_updated_envelop(request.json)
