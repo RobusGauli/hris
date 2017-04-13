@@ -177,3 +177,20 @@ def length_require_envelop(message=None, code=411):
             'status' : 'fail'
         }
     )
+
+def extra_keys_envelop(message=None, code=411):
+    return jsonify(
+        {
+            'data' : {}, 
+            'code' : code, 
+            'message' : message if message else 'Unknown',
+            'status' : 'fail'
+        }
+    )
+
+def keys_require_envelop(message=None, code=411):
+    return jsonify({
+        'message' : message if message else 'Some keys missing',
+        'code' : code,
+        'status' : 'fail'
+    })

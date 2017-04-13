@@ -36,7 +36,9 @@ from hris.api.response_envelop import (
     record_not_updated_env,
     fatal_error_envelop,
     missing_keys_envelop, 
-    length_require_envelop
+    length_require_envelop,
+    extra_keys_envelop,
+    keys_require_envelop
 )
 
 
@@ -203,7 +205,7 @@ def get_employee(id):
 
 @api.route('/employees/<int:id>/qualifications', methods=['POST'])
 @can_edit_permit
-def create_qualification(id):
+def create_qualification_by_emp(id):
     if not request.json:
         abort(400)
     #check if there is empty field comming up
@@ -227,7 +229,7 @@ def create_qualification(id):
 
 @api.route('/employees/<int:id>/qualifications', methods=['GET'])
 @can_edit_permit
-def get_qualifications(id):
+def get_qualifications_by_emp(id):
     try:
         qls = db_session.query(Qualification).filter(Qualification.employee_id==id).all()
     except NoResultFound as e:
@@ -249,3 +251,177 @@ def get_qualifications(id):
         return records_json_envelop(list(quals))
 
 
+@api.route('/employees/<int:emp_id>/qualifications/<int:q_id>', methods=['PUT'])
+@can_edit_permit
+def update_qualification_by_emp(emp_id, q_id):
+    if not request.json:
+        abort(400)
+    #check to see if there is any empty values
+    if not all(len(str(val).strip()) for val in request.json.values()):
+        abort(411)
+    #check to see if the request has the right type of keys
+    result = request.json.keys() - set(col.name for col in Qualification.__mapper__.columns)
+    if result:
+        
+        return extra_keys_envelop('Keys: {!r} not accepted'.format(', '.join(r for r in result)))
+    
+    #clearn up the values for string
+    #generator expression
+    cleaned_json = ((key, val.strip()) if isinstance(val, str) else (key, val) for key, val in request.json.items())
+        #this means that it has extra set of keys that is not necessary
+    #make the custom query
+    inner = ', '.join('{:s} = {!r}'.format(key, val) for key, val in cleaned_json)
+    query = '''UPDATE qualifications SET {:s} WHERE id = {:d}'''.format(inner, q_id)
+    
+
+    #try to executre
+    with engine.connect() as con:
+        try:
+            con.execute(query)
+        except IntegrityError as e:
+            return record_exists_envelop()
+        except Exception as e:
+            return fatal_error_envelop()
+        else:
+            return record_updated_envelop(request.json)
+
+############@@@@############
+
+@api.route('/employees/<int:id>/certifications', methods=['POST'])
+@can_edit_permit
+def create_certification_by_emp(id):
+    if not request.json:
+        abort(400)
+    #check if there is empty field comming up
+    if not all(len(str(val).strip()) >= 1 for key, val in request.json.items()):
+        abort(411)
+    
+    #check if there is no registration number and registration body
+    result = {'regulatory_body', 'registration_number'} - request.json.keys()
+    if result:
+        return keys_require_envelop('"regulatory_body" and "regstration_number" is required')
+    #clean up the values
+    cert = {key : val.strip() if isinstance(val, str) else val for key, val in request.json.items()}
+    #insert
+    print(id)
+    try:
+        print(id)
+        db_session.add(Certification(**cert, employee_id=id))
+        db_session.commit()
+    except IntegrityError as e:
+        return record_exists_envelop()
+    except Exception as e:
+        return fatal_error_envelop()
+    else:
+        return record_created_envelop(request.json)
+
+@api.route('/employees/<int:id>/certifications', methods=['GET'])
+@can_edit_permit
+def get_certifications_by_emp(id):
+    try:
+        certs = db_session.query(Certification).filter(Certification.employee_id==id).all()
+    except NoResultFound as e:
+        return record_notfound_envelop()
+    except Exception as e:
+        return fatal_error_envelop()
+    else:
+        certs = ({
+            'id' : q.id,
+            'registration_number' : q.registration_number if q.registration_number else '',
+            'regulatory_body' : q.regulatory_body if q.regulatory_body else '',
+            'registration_type' : q.registration_type if q.registration_type else '',
+            'last_renewal_date' : q.last_renewal_date if q.last_renewal_date else '',
+            'expiry_date' : q.expiry_date if q.expiry_date else ''
+            
+        } for q in certs)
+        return records_json_envelop(list(certs))
+
+
+@api.route('/employees/<int:emp_id>/certifications/<int:c_id>', methods=['PUT'])
+@can_edit_permit
+def update_certification_by_emp(emp_id, c_id):
+    if not request.json:
+        abort(400)
+    #check to see if there is any empty values
+    if not all(len(str(val).strip()) for val in request.json.values()):
+        abort(411)
+    #check to see if the request has the right type of keys
+    result = request.json.keys() - set(col.name for col in Certification.__mapper__.columns)
+    if result:
+        
+        return extra_keys_envelop('Keys: {!r} not accepted'.format(', '.join(r for r in result)))
+    
+    #clearn up the values for string
+    #generator expression
+    cleaned_json = ((key, val.strip()) if isinstance(val, str) else (key, val) for key, val in request.json.items())
+        #this means that it has extra set of keys that is not necessary
+    #make the custom query
+    inner = ', '.join('{:s} = {!r}'.format(key, val) for key, val in cleaned_json)
+    query = '''UPDATE certifications SET {:s} WHERE id = {:d}'''.format(inner, c_id)
+    
+
+    #try to executre
+    with engine.connect() as con:
+        try:
+            con.execute(query)
+        except IntegrityError as e:
+            return record_exists_envelop()
+        except Exception as e:
+            return fatal_error_envelop()
+        else:
+            return record_updated_envelop(request.json)
+
+
+#######------------------__##########################
+
+@api.route('/employees/<int:id>/trainings', methods=['POST'])
+@can_edit_permit
+def create_training_by_emp(id):
+    if not request.json:
+        abort(400)
+    #check if there is empty field comming up
+    if not all(len(str(val).strip()) >= 1 for key, val in request.json.items()):
+        abort(411)
+    
+    #check if there is no registration number and registration body
+    result = {'name'} - request.json.keys()
+    if result:
+        return keys_require_envelop('key : "name" is required')
+    #clean up the values
+    trs = {key : val.strip() if isinstance(val, str) else val for key, val in request.json.items()}
+    #insert
+    print(id)
+    try:
+        print(id)
+        db_session.add(Training(**trs, employee_id=id))
+        db_session.commit()
+    except IntegrityError as e:
+        return record_exists_envelop()
+    except Exception as e:
+        return fatal_error_envelop()
+    else:
+        return record_created_envelop(request.json)
+
+@api.route('/employees/<int:id>/trainings', methods=['GET'])
+@can_edit_permit
+def get_trainings_by_emp(id):
+    try:
+        trs = db_session.query(Training).filter(Traning.employee_id==id).all()
+    except NoResultFound as e:
+        return record_notfound_envelop()
+    except Exception as e:
+        return fatal_error_envelop()
+    else:
+        trs = ({
+            'id' : q.id,
+            'name' : q.name if q.name else '',
+            'organiser_name' : q.organiser_name if q.organiser_name else '',
+            'funding_source' : q.funding_source if q.funding_source else '',
+            'duration' : q.duration if q.duration else '',
+            'institute' : q.institute if q.institute else '',
+            'duration' : q.duration if q.duration else '',
+            'city' : q.city if q.city else '',
+            'state' : q.state if q.state else '',
+            'province' : q.province if q.province else ''            
+        } for q in trs)
+        return records_json_envelop(list(trs))
