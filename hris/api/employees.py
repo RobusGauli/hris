@@ -460,3 +460,102 @@ def update_training_by_emp(emp_id, t_id):
             return fatal_error_envelop()
         else:
             return record_updated_envelop(request.json)
+
+
+#####employee extra details endpoints
+
+@api.route('/employees/<int:id>/empextras', methods=['POST'])
+@can_edit_permit
+def create_employee_extra(id):
+    #cheek to see if ther is json
+    if not request.json:
+        abort(400)
+    #if there is json,  if there are required fields
+    required_keys = set(col.name for col in EmployeeExtra.__mapper__.columns) - {'id', 'employee_id'}
+    
+    
+    #keys from the rquest object
+    result = request.json.keys() - required_keys
+    
+    #if there is extra remaining keys , abort
+    if result:
+        return extra_keys_envelop('keys not accepeted %r' % result)
+    
+    #check to see if there are any values less than 1
+    if not all(len(str(val).strip())>=1 for val in request.json.values()):
+        return length_require_envelop()
+    #clearn up the dictionary
+    json_vals = {key : val.strip() if isinstance(val, str) else val for key, val in request.json.items()}
+    
+    #try to insert to database
+    try:
+        db_session.add(EmployeeExtra(**json_vals, employee_id=id))
+        db_session.commit()
+    except IntegrityError as e:
+        
+        return record_exists_envelop()
+    except Exception as e:
+        raise e
+        return fatal_error_envelop()
+    else:
+        return record_created_envelop(request.json) 
+
+
+@api.route('/employees/<int:id>/empextras', methods=['GET'])
+@can_edit_permit
+def get_empextras_by_emp(id):
+    try:
+        trs = db_session.query(EmployeeExtra).filter(EmployeeExtra.employee_id==id).all()
+    except NoResultFound as e:
+        return record_notfound_envelop()
+    except Exception as e:
+        return fatal_error_envelop()
+    else:
+        trs = ({
+            'id' : q.id,
+            'ref_name' : q.ref_name if q.ref_name else '',
+            'ref_address' : q.ref_address if q.ref_address else '',
+            'ref_contact_number' : q.ref_contact_number if q.ref_contact_number else '',
+            'emp_father_name' : q.emp_father_name if q.emp_father_name else '',
+            'emp_mother_name' : q.emp_mother_name if q.emp_mother_name else '',
+            'emp_single' : q.emp_single if q.emp_single else '',
+            'emp_wife_name' : q.emp_wife_name if q.emp_wife_name else '',
+            'emp_num_of_children' : q.emp_num_of_children if q.emp_num_of_children else ''
+                       
+        } for q in trs)
+        return records_json_envelop(list(trs))
+
+
+@api.route('/employees/<int:emp_id>/empextras/<int:ex_id>', methods=['PUT'])
+@can_edit_permit
+def update_empextra_by_emp(emp_id, ex_id):
+    if not request.json:
+        abort(400)
+    #check to see if there is any empty values
+    if not all(len(str(val).strip()) for val in request.json.values()):
+        abort(411)
+    #check to see if the request has the right type of keys
+    result = request.json.keys() - set(col.name for col in EmployeeExtra.__mapper__.columns)
+    if result:
+        
+        return extra_keys_envelop('Keys: {!r} not accepted'.format(', '.join(r for r in result)))
+    
+    #clearn up the values for string
+    #generator expression
+    cleaned_json = ((key, val.strip()) if isinstance(val, str) else (key, val) for key, val in request.json.items())
+        #this means that it has extra set of keys that is not necessary
+    #make the custom query
+    inner = ', '.join('{:s} = {!r}'.format(key, val) for key, val in cleaned_json)
+    query = '''UPDATE employee_extra SET {:s} WHERE id = {:d}'''.format(inner, ex_id)
+    
+
+    #try to executre
+    with engine.connect() as con:
+        try:
+            con.execute(query)
+        except IntegrityError as e:
+            return record_exists_envelop()
+        except Exception as e:
+            return fatal_error_envelop()
+        else:
+            return record_updated_envelop(request.json)
