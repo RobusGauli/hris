@@ -53,11 +53,14 @@ class Role(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     role_type = Column(String, unique=True, nullable=False)
-    permission_one = Column(Boolean, default=False)
-    permission_two = Column(Boolean, default=False)
-    permission_three = Column(Boolean, default=False)
-    permission_four = Column(Boolean, default=False)
-    permission_five = Column(Boolean, default=False)
+    permission_one = Column(Boolean, default=False) #user can edit, insert the database (do the main settings)
+
+    permission_two = Column(Boolean, default=False) # user can edit, delete the data of branches (can view all the branches employees and data)
+    permission_three = Column(Boolean, default=False) # User can edit , delete the data for agencies(can view all the agencies employees and data)
+
+    permission_four = Column(Boolean, default=False) #user can only view all the employees of his/her own agency
+
+    permission_five = Column(Boolean, default=False) # user can view all the employees of agencies
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
     created_by = Column(String(20))
