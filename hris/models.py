@@ -55,7 +55,7 @@ class Role(Base):
     role_type = Column(String, unique=True, nullable=False)
     permission_one = Column(Boolean, default=False) #user can edit, insert the database (do the main settings)
 
-    permission_two = Column(Boolean, default=False) # user can edit, delete the data of branches (can view all the branches employees and data)
+    permission_two = Column(Boolean, default=False) # user can edit, delete the data of branches (can view all the branches and agencies employees and data)
     permission_three = Column(Boolean, default=False) # User can edit , delete the data for agencies(can view all the agencies employees and data)
 
     permission_four = Column(Boolean, default=False) #user can only view all the employees of his/her own agency
@@ -67,6 +67,18 @@ class Role(Base):
     updated_by = Column(String(20))
     #relationship
     users = relationship('User', back_populates='role', cascade = 'all, delete, delete-orphan')
+
+    def to_dict(self):
+        role = {
+            'role_type' : self.role_type if self.role_type else '',
+            'permission_one' : self.permision_one if self.permission_one else False,
+            'permission_two' : self.permission_two if self.permission_two else False,
+            'permission_three' : self.permission_three if self.permission_three else False,
+            'permission_four' : self.permission_four if self.permission_four else False,
+            'permission_five' : self.permission_five if self.permission_five else False,
+            'id' : self.id 
+        }
+        return role
 
 
 class CompanyDetail(Base):
