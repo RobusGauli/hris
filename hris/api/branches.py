@@ -8,7 +8,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from hris import db_session
 
 #auth
-from hris.api.auth import can_edit_permit
+from hris.api.auth import can_edit_permit, permitted_to, only_admin
 ###
 from hris.models import (
     User, 
@@ -31,7 +31,7 @@ from hris.api.response_envelop import (
 )
 
 @api.route('/branches', methods=['POST'])
-@can_edit_permit
+@only_admin
 def create_branch():
     if not request.json:
         abort(400)
@@ -81,7 +81,7 @@ def create_branch():
 
 
 @api.route('/branches', methods=['GET'])
-@can_edit_permit
+@only_admin
 def get_branches():
     try:
         branches = db_session.query(Branch).filter(Branch.is_branch==True).order_by(Branch.facility_name).all()
@@ -100,7 +100,6 @@ def get_branches():
 
 
 @api.route('/agencies', methods=['GET'])
-@can_edit_permit
 def get_agencies():
     try:
         branches = db_session.query(Branch).filter(Branch.is_branch==False).order_by(Branch.facility_name).all()

@@ -3,6 +3,8 @@ import os
 from flask import Flask 
 
 
+
+
 #exception
 #########
 from psycopg2 import IntegrityError
@@ -27,6 +29,27 @@ db_session = scoped_session(sessionmaker(autocommit=False,
 Base = declarative_base()
 Base.query = db_session.query_property()
 
+from hris.models import Role
+
+ROLES_PERMISSION = None
+
+def update_role_permission():
+    global ROLES_PERMISSION
+    ROLES_PERMISSION = {}
+    roles = db_session.query(Role).all()
+    roles = [role.to_dict() for role in roles]
+    for role in roles:
+        ROLES_PERMISSION[role['id']] = role
+    return ROLES_PERMISSION
+
+#
+
+
+
+
+
+
+
 def shutdown_session(exception=None):
     print('Session closed')
     db_session.remove()
@@ -36,6 +59,9 @@ from hris import models
 
 
 def create_app(config_name=None, main=True):
+    #update the role and permission table
+    update_role_permission()
+
     if config_name is None:
         config_name = os.environ.get('FLACK_CONFIG', 'development')
     app = Flask(__name__)

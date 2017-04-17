@@ -194,3 +194,12 @@ def keys_require_envelop(message=None, code=411):
         'code' : code,
         'status' : 'fail'
     })
+
+def unauthorized_envelop(code=401):
+    return jsonify(
+        {
+            'message' : 'Not authorized',
+            'code' : code,
+            'status' : 'fail'
+        }
+    )

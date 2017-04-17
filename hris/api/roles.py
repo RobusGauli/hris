@@ -16,6 +16,7 @@ from hris.models import (
     CompanyDetail, 
     Role
 )
+from functools import wraps
 
 from hris.api.response_envelop import (
     records_json_envelop,
@@ -41,6 +42,7 @@ def update_query(table_name,mapping, id):
 
 def handle_keys_for_post_request(model, *, _exclude=None):
     def decorator(func):
+        @wraps(func)
         def wrapper(*args, **kwargs):
             fields_db = set(col.name for col in model.__mapper__.columns)
             if not request.json:
@@ -63,6 +65,7 @@ def handle_keys_for_post_request(model, *, _exclude=None):
 
 def handle_keys_for_update_request(model, *, _exclude=None):
     def _decorator(func):
+        @wraps(func)
         def _wrapper(*args, **kwargs):
 
             fields_db = set(col.name for col in model.__mapper__.columns)
@@ -117,7 +120,9 @@ def get_roles():
 @can_edit_permit
 @handle_keys_for_update_request(Role, _exclude=('id', ))
 def update_role(r_id):
+    #check to see if they want to update the admin_role. refuse to change the admin_roel
     
+
     #clean up the json values
     cleaned_json = ((key, val.strip()) if isinstance(val, str) else (key, val) for key, val in request.json.items())
 

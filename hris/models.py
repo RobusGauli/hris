@@ -48,19 +48,29 @@ class User(Base):
     #one to one with employees
     employee = relationship('Employee', uselist=False, back_populates='user')
 
+
+
+
+
+
 class Role(Base):
     __tablename__ = 'roles'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     role_type = Column(String, unique=True, nullable=False)
-    permission_one = Column(Boolean, default=False) #user can edit, insert the database (do the main settings)
+    permission_one = Column(Boolean, default=False) #user can edit, insert, delete the database (do the main settings)
 
-    permission_two = Column(Boolean, default=False) # user can edit, delete the data of branches (can view all the branches and agencies employees and data)
-    permission_three = Column(Boolean, default=False) # User can edit , delete the data for agencies(can view all the agencies employees and data)
+    permission_two = Column(Boolean, default=False) # user can edit, delete, view the data of branches (can view all the branches and agencies employees and data)
+    permission_three = Column(Boolean, default=False) # User can edit , delete, view the data for agencies(can view all the agencies employees and data)
 
     permission_four = Column(Boolean, default=False) #user can only view all the employees of his/her own agency
 
     permission_five = Column(Boolean, default=False) # user can view all the employees of agencies
+    permission_six = Column(Boolean, default=False)
+    permission_seven = Column(Boolean, default=False)
+    permission_eight = Column(Boolean, default=False)
+    permission_nine = Column(Boolean, default=False)
+    permission_ten = Column(Boolean, default=False)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
     created_by = Column(String(20))
@@ -71,14 +81,23 @@ class Role(Base):
     def to_dict(self):
         role = {
             'role_type' : self.role_type if self.role_type else '',
-            'permission_one' : self.permision_one if self.permission_one else False,
+            'permission_one' : self.permission_one if self.permission_one else False,
             'permission_two' : self.permission_two if self.permission_two else False,
             'permission_three' : self.permission_three if self.permission_three else False,
             'permission_four' : self.permission_four if self.permission_four else False,
             'permission_five' : self.permission_five if self.permission_five else False,
+            'permission_six' : self.permission_six if self.permission_six else False,
+            'permission_seven' : self.permission_seven if self.permission_seven else False,
+            'permission_eight' : self.permission_eight if self.permission_eight else False,
+            'permission_nine' : self.permission_nine if self.permission_nine else False, 
+            'permission_ten' : self.permission_ten if self.permission_ten else False,
             'id' : self.id 
         }
         return role
+    
+    
+
+
 
 
 class CompanyDetail(Base):
@@ -92,6 +111,12 @@ class CompanyDetail(Base):
     country = Column(String(30), nullable=False)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+
+
+
+
+
 
 class Branch(Base):
     __tablename__ = 'branches'
@@ -115,6 +140,8 @@ class Branch(Base):
 
     #realiationhsip
     employees = relationship('Employee', back_populates='employee_branch', cascade='all, delete, delete-orphan')
+
+
 
 
 

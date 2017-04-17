@@ -77,10 +77,14 @@ def register_user():
         
         #get the user from the users for the password and user name
         try:
-            user = db_session.query(User).filter(User.user_name==user_name).filter(User.password==hashed_pass).one()
-            print(user.password == hashed_pass)
-            print(user)
-            return record_json_envelop({'access_token' : user.access_token})
+            user = db_session.query(User).filter(User.user_name==user_name).one()
+            if not user:
+                return record_notfound_envelop('User doesn\'t exists')
+            #if there is user check for the password
+            if hashed_pass == user.password:
+                return record_json_envelop({'access_token' : user.access_token})
+            else:
+                return record_notfound_envelop('Password doesn\'t match')
         except NoResultFound as e:
             return record_notfound_envelop('User doesn\'t exists')
 
