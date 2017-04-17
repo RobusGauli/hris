@@ -1,0 +1,114 @@
+# URL : /employees/<e_id>/trainings  ### POST
+
+{"organiser_name" : "name of the orangiasd",
+        "funding_source" : "asdasd",
+        "duration" : "asd",
+        "institue" : "name of the institute",
+     "city" : "name of the city",
+        "state" : "name of the state",
+    "province" : "namasdasD",
+    "country" : "name of the couter",
+    "start_date" : "2014-12-12",
+    "end_date" : "2012-11-11",
+      "name" : "asd"
+    
+}
+
+
+#URL : /employees/<e_id>/trainings #### GET
+
+#URL : /employees/<e_id>/tranings/<t_id>  ####PUT
+
+{"organiser_name" : "name of the orangiasd",
+    "funding_source" : "asdasd",
+    "duration" : "asd",
+    "institue" : "name of the institute",
+    "city" : "name of the city",
+    "state" : "name of the state",
+    "province" : "namasdasD",
+    "country" : "name of thascasdasde couter",
+    "start_date" : "2014-12-12",
+    "end_date" : "2012-11-11",
+      "name" : "asd"
+    
+}
+
+
+
+#URL : /employees/<e_id>/certifications ### POST
+{
+"expiry_date": "2011-10-10",
+
+"last_renewal_date": "2012-11-11",
+"registration_number": "213e13",
+"registration_type": "Hasd",
+"regulatory_body": "121232"
+}
+
+#URL /employees/<e_id>/certifications ##GET
+
+#URL /employees/<e_id>/certifications/<c_id>  ###PUT
+
+{
+"expiry_date": "2011-10-10",
+
+"last_renewal_date": "2012-11-11",
+"registration_number": "213e13",
+"registration_type": "Hasd",
+"regulatory_body": "121232"
+}
+
+
+
+
+
+#URL /employees/<e_id>/qualifications ##POST
+{
+"city": "janak",
+"country": "asdasd",
+"end_date": "2010-10-10",
+
+"institute_name": "sad",
+"name": "thapathali",
+"province": "asdsa",
+"start_date": "2012-12-12",
+"state": "gasd"
+}
+
+#URL /employees/<e_id>/qualifications #GET
+
+
+#URL /employees<e_id>/qualifications/<q_id> ##PUT
+
+
+
+#URL /employees/<e_id>/empextras ##POST
+
+{
+"emp_father_name": "sdfsdf",
+"emp_mother_name": "asdasd",
+"emp_num_of_children": "2",
+"emp_single": true,
+"emp_wife_name": "robuas",
+
+"ref_address": "sadas",
+"ref_contact_number": "98123123",
+"ref_name": "AsdaSD"
+}
+
+#URL  /employees/<e_id>/empextras GET
+
+
+#URL /employees/<e_id>/empextras/<q_id>   PUT
+
+{
+"emp_father_name": "sdsdffsdf",
+"emp_mother_name": "asdasd",
+"emp_num_of_children": "2",
+"emp_single": true,
+"emp_wife_name": "robuas",
+
+"ref_address": "sadas",
+"ref_contact_number": "98123123",
+"ref_name": "AsdaSD"
+}

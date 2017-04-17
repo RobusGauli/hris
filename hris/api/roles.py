@@ -1,5 +1,5 @@
 '''This module is responsbile for creating roles and assigning different permissions to the roles'''
-from hris.utils import hash_password, gen_access_token, decode_access_token
+from hris.utils import hash_password, gen_access_token, decode_access_token, random_string
 from flask import request, abort, jsonify, g
 from functools import wraps
 
@@ -13,9 +13,9 @@ from hris.api.auth import can_edit_permit
 ###
 from hris.models import (
     User, 
-    CompanyDetail
+    CompanyDetail, 
+    Role
 )
-
 
 from hris.api.response_envelop import (
     records_json_envelop,
@@ -35,4 +35,6 @@ from hris.api.response_envelop import (
 def create_roles():
     '''This method will create a role and assign diffenet permissions'''
 
-    return 'yeah roles must be created'
+    cols = [col.name for col in Role.__mapper__.columns]
+    print(request.json)
+    return 'asd'

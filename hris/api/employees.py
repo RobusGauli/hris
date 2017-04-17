@@ -481,7 +481,7 @@ def create_employee_extra(id):
     if result:
         return extra_keys_envelop('keys not accepeted %r' % result)
     
-    #check to see if there are any values less than 1
+    #check to see if there are any valuekjdhflkjadsfaklsdhfkajsds less than 1
     if not all(len(str(val).strip())>=1 for val in request.json.values()):
         return length_require_envelop()
     #clearn up the dictionary

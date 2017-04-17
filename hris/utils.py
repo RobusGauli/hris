@@ -3,9 +3,18 @@ import hashlib
 from functools import wraps
 from flask import request, jsonify
 
+
+
 import jwt
 
 SECRET = 'shivapandeyisverybad'
+
+STRINGS = 'ABCSJKSHDJHG'
+from random import choice
+
+def random_string(num):
+    return ''.join(choice(STRINGS) for i in range(num))
+    
 
 def timestamp():
     return int(time.time())
