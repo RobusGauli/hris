@@ -8,7 +8,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from hris import db_session
 
 #auth
-from hris.api.auth import can_edit_permit
+from hris.api.auth import can_edit_permit, only_admin
 
 from hris.models import (
     FacilityType,
@@ -34,7 +34,7 @@ from hris.api.response_envelop import (
 
 
 @api.route('/facilities', methods=['POST'])
-@can_edit_permit
+@only_admin
 def create_facility():
     if not set(request.json.keys()) == {'name'}:
         return jsonify({'message' : 'missing keys'})
@@ -60,7 +60,7 @@ def create_facility():
 
 
 @api.route('/districts', methods=['POST'])
-@can_edit_permit
+@only_admin
 def create_district():
     if not set(request.json.keys()) == {'name'}:
         return jsonify({'message' : 'missing keys'})
@@ -85,7 +85,7 @@ def create_district():
 
 
 @api.route('/llg', methods=['POST'])
-@can_edit_permit
+@only_admin
 def create_llg():
     if not set(request.json.keys()) == {'name'}:
         return jsonify({'message' : 'missing keys'})
@@ -110,7 +110,7 @@ def create_llg():
 
 
 @api.route('/provinces', methods=['POST'])
-@can_edit_permit
+@only_admin
 def create_province():
     if not set(request.json.keys()) == {'name'}:
         return jsonify({'message' : 'missing keys'})
@@ -134,7 +134,7 @@ def create_province():
         return record_created_envelop(request.json)
 
 @api.route('/regions', methods=['POST'])
-@can_edit_permit
+@only_admin
 def create_region():
     if not set(request.json.keys()) == {'name'}:
         return jsonify({'message' : 'missing keys'})
@@ -162,7 +162,7 @@ def create_region():
 
 
 @api.route('/facilities', methods=['GET'])
-@can_edit_permit
+@only_admin
 def get_facilities():
     
     try:
@@ -173,7 +173,7 @@ def get_facilities():
         return fatal_error_envelop()
 
 @api.route('/llg', methods=['GET'])
-@can_edit_permit
+@only_admin
 def get_llg():
     
     try:
@@ -185,7 +185,7 @@ def get_llg():
 
 
 @api.route('/districts', methods=['GET'])
-@can_edit_permit
+@only_admin
 def get_districts():
     
     try:
@@ -196,7 +196,7 @@ def get_districts():
         return fatal_error_envelop()
 
 @api.route('/provinces', methods=['GET'])
-@can_edit_permit
+@only_admin
 def get_provinces():
     
     try:
@@ -208,7 +208,7 @@ def get_provinces():
 
 
 @api.route('/regions', methods=['GET'])
-@can_edit_permit
+@only_admin
 def get_regions():
     
     try:
@@ -221,7 +221,7 @@ def get_regions():
     
 
 @api.route('/facilities/<int:id>', methods=['PUT'])
-@can_edit_permit
+@only_admin
 def update_facility(id):
     if not request.json:
         abort(400)
@@ -251,7 +251,7 @@ def update_facility(id):
 
 
 @api.route('/llg/<int:id>', methods=['PUT'])
-@can_edit_permit
+@only_admin
 def update_llg(id):
     if not request.json:
         abort(400)
@@ -281,7 +281,7 @@ def update_llg(id):
 
 
 @api.route('/districts/<int:id>', methods=['PUT'])
-@can_edit_permit
+@only_admin
 def update_district(id):
     if not request.json:
         abort(400)
@@ -311,7 +311,7 @@ def update_district(id):
     
 
 @api.route('/provinces/<int:id>', methods=['PUT'])
-@can_edit_permit
+@only_admin
 def update_province(id):
     if not request.json:
         abort(400)
@@ -341,7 +341,7 @@ def update_province(id):
 
     
 @api.route('/regions/<int:id>', methods=['PUT'])
-@can_edit_permit
+@only_admin
 def update_region(id):
     if not request.json:
         abort(400)

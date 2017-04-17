@@ -80,15 +80,23 @@ def permitted_to(p_list=None):
 def only_admin(func):
     @wraps(func)
     def admin_wrapper(*args, **kwargs):
-        if not 'Token' in request.headers.keys():
+        print(request.headers)
+        if  'Token' not in request.headers.keys():
             return unauthorized_envelop()
         try:
-            decoded = decode_access_token(request.headers['token'])
+            print(request.headers)
+            decoded = decode_access_token(request.headers['Token'])
+            if decoded is None:
+                return unauthorized_envelop()
+            
         except Exception:
-            return unauthorized_envelop()
+            raise 
         else:
             role_id = decoded['role_id']
-            print(ROLES_PERMISSION)
-        return func(*args, **kwargs)
+            
+            #for admin role,'permission one' must be true
+            if not ROLES_PERMISSION[role_id]['permission_one'] == True:
+                return unauthorized_envelop()
+            return func(*args, **kwargs)
     return admin_wrapper
             

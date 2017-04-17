@@ -8,7 +8,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from hris import db_session
 
 #auth
-from hris.api.auth import can_edit_permit
+from hris.api.auth import can_edit_permit, only_admin
 ###
 from hris.models import (
     User, 
@@ -40,7 +40,7 @@ from hris.api.response_envelop import (
 
 
 @api.route('/empcategoryranks', methods=['POST'])
-@can_edit_permit
+@only_admin
 def create_emp_cat_ranks():
     if not request.json:
         abort(400)
@@ -69,7 +69,7 @@ def create_emp_cat_ranks():
 
 
 @api.route('/empcategoryranks', methods=['GET'])
-@can_edit_permit
+@only_admin
 def get_emp_cat_ranks():
 
     try:
@@ -84,7 +84,7 @@ def get_emp_cat_ranks():
         return records_json_envelop(list(ranks))
 
 @api.route('/empcategoryranks/<int:id>', methods=['PUT'])
-@can_edit_permit
+@only_admin
 def update_rank(id):
     if not request.json:
         abort(400)
@@ -115,7 +115,7 @@ def update_rank(id):
 
 
 @api.route('/empcategoryranks/<int:rank_id>/empcategories', methods=['POST'])
-@can_edit_permit
+@only_admin
 def create_emp_cat(rank_id):
     if not request.json:
         abort(400)
@@ -144,7 +144,7 @@ def create_emp_cat(rank_id):
 
 
 @api.route('/empcategories', methods=['GET'])
-@can_edit_permit
+@only_admin
 def get_emp_categories():
 
     try:
@@ -160,7 +160,7 @@ def get_emp_categories():
         
 
 @api.route('/empcategories/<int:id>', methods=['PUT'])
-@can_edit_permit
+@only_admin
 def update_emp_category(id):
     if not request.json:
         abort(400)
@@ -195,7 +195,7 @@ def update_emp_category(id):
 
 
 @api.route('/employeetypes', methods=['POST'])
-@can_edit_permit
+@only_admin
 def create_employee_type():
 
     if not request.json:
@@ -224,7 +224,7 @@ def create_employee_type():
     
 
 @api.route('/employeetypes', methods=['GET'])
-@can_edit_permit
+@only_admin
 def get_employee_types():
 
     try:
@@ -240,7 +240,7 @@ def get_employee_types():
 
 
 @api.route('/employeetypes/<int:id>', methods=['PUT'])
-@can_edit_permit
+@only_admin
 def update_emp_type(id):
     if not request.json:
         abort(400)

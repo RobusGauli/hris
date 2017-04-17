@@ -81,7 +81,6 @@ def create_branch():
 
 
 @api.route('/branches', methods=['GET'])
-@only_admin
 def get_branches():
     try:
         branches = db_session.query(Branch).filter(Branch.is_branch==True).order_by(Branch.facility_name).all()

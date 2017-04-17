@@ -8,7 +8,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from hris import db_session
 
 #auth
-from hris.api.auth import can_edit_permit
+from hris.api.auth import can_edit_permit, only_admin
 ###
 from hris.models import (
     User, 
@@ -90,7 +90,7 @@ def register_user():
 
 
 @api.route('/company', methods=['POST'])
-@can_edit_permit
+@only_admin
 def add_company_detail():
 
     if not set(request.json.keys()) == {'name', 'currency_symbol', 'is_prefix', 'country', 'description'}:
