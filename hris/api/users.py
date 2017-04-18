@@ -90,6 +90,8 @@ def register_user():
         except NoResultFound as e:
             return record_notfound_envelop('User doesn\'t exists')
     ###to register the user with the employee
+
+
     elif request.args['action'] == 'registeruserforemployee':
         if not request.args.get('e_id', None):
             return 'please alos senr the e_id'
@@ -122,7 +124,7 @@ def register_user():
         
 
         else:
-            return jsonify({'message' : 'user_added_successfully', 'access_token' : user_access_token.decode('utf-8')})
+            return jsonify({'message' : 'user_added_successfully', 'access_token' : user_access_token.decode('utf-8'), 'status': 'success'})
 
 
 
