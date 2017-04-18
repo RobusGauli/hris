@@ -7,6 +7,7 @@ from sqlalchemy.exc import IntegrityError #foreign key violation #this won't com
 from sqlalchemy.orm.exc import NoResultFound
 from hris import db_session
 
+import itertools
 #auth
 from hris.api.auth import can_edit_permit, only_admin
 ###
@@ -270,3 +271,37 @@ def update_emp_type(id):
         abort(500)
     else:
         return record_updated_envelop(request.json)
+
+
+#get the employees by ranks
+
+@api.route('/empcategoryranks/<r_id>/employees', methods=['GET'])
+def get_employees_by_rank(r_id):
+    try:
+        rank = db_session.query(EmployeeCategoryRank).filter(EmployeeCategoryRank.id==r_id).one()
+        #flatten out the list
+        employees = itertools.chain.from_iterable(cat.employees for cat in rank.emp_categories)
+    except NoResultFound as e:
+        return record_notfound_envelop()
+    except Exception as e:
+        return fatal_error_envelop()
+    else:
+        return records_json_envelop(list(emp.to_dict() for emp in employees))
+
+
+#get the employees by categories
+@api.route('/empcategories/<int:c_id>/employees')
+def get_employees_by_category(c_id):
+    try:
+        cat = db_session.query(EmployeeCategory).filter(EmployeeCategory.id==c_id).one()
+        if cat is None:
+            raise NoResultFound()
+    except NoResultFound as e:
+        return record_notfound_envelop()
+    except Exception as e:
+        return fatal_error_envelop()
+    else:
+        employees = cat.employees
+        return records_json_envelop(list(emp.to_dict() for emp in employees))
+    
+        

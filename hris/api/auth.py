@@ -58,33 +58,6 @@ def can_edit_permit(func):
 
     return wrapper
 
-def permitted_to(p_list=None):
-    def deco(func):
-        @wraps(func)
-        def perm_wrapper(*args, **kwargs):
-            if not 'Token' in request.headers.keys():
-                return unauthorized_envelop()
-            try:
-                decoded = decode_access_token(request.headers['token'])
-            except Exception:
-                return unauthorized_envelop()
-            else:
-                role_id = decoded['role_id']
-            
-            role = db_session.query(Role).filter(Role.id==role_id).one()
-            role = role.to_dict()
-            permissions = (role['permission_one'],
-                           role['permission_two'],
-                           role['permission_three'],
-                           role['permission_four'],
-                           role['permission_five'])
-            print(permissions) 
-
-            #if everythin went well check the permissions
-
-            return func(*args, **kwargs)
-        return perm_wrapper
-    return deco
 
 
 
@@ -113,73 +86,10 @@ def only_admin(func):
             
 
 
-def allowed_permission(func):
-    @wraps(func)
-    def _wrapper(*args, **kwargs):
-        
-        if 'Token' not in request.headers.keys():
-            return unauthorized_envelop()
-        try:
-            decoded = decode_access_token(request.headers['Token'])
-            if decoded is None:
-                return unauthrorized_envelop()
-        except Exception as e:
-            return unauthorized_envelop()
-        else:
-            role_id = decoded['role_id']
-            user_name = decoded['user_name']
-
-
-
-
-           
-        if ROLES_PERMISSION[role_id]['permission_one'] == True:
-            return func(*args, **kwargs)
-
-
-
-            
-        if ROLES_PERMISSION[role_id]['permission_two'] == True:
-                #he/she should be be able to check the branch_id and if branch_id is of belongs 
-                #to branches then he should be allowed to create employee
-            emp_branch_id = request.json.get('employee_branch_id')
-            try:
-
-                branch = db_session.query(Branch).filter(Branch.id==emp_branch_id).one()
-            except NoResultFound as e:
-                return record_notfound_envelop()
-            except Exception as e:
-                return fatal_error_envelop()
-            else:
-                is_branch = branch.is_branch
-                print(is_branch)
-                if not is_branch:
-                    return unauthorized_envelop()
-                return func(*args, **kwargs)
-
-        
-        if ROLES_PERMISSION[role_id]['permission_three'] == True:
-                #this allows him/her to add the agency employee
-            emp_branch_id = request.json.get('employee_branch_id')
-            try:
-
-                branch = db_session.query(Branch).filter(Branch.id==emp_branch_id).one()
-            except NoResultFound as e:
-                return record_notfound_envelop()
-            except Exception as e:
-                return fatal_error_envelop()
-            else:
-                is_branch = branch.is_branch
-                print(is_branch)
-                if is_branch:
-                    return unauthorized_envelop()
-                return func(*args, **kwargs)
-
-    return _wrapper
-
 
 def allow_permission(func):
-    def __wrapper(*args, **kwargs):
+    @wraps(func)
+    def _wrapper(*args, **kwargs):
 
         if 'Token' not in request.headers.keys():
             return unauthorized_envelop()
@@ -214,7 +124,7 @@ def allow_permission(func):
                 return handle_branch(branch, emp_branch_id, role_id, user_name, func, *args, **kwargs)
             elif is_branch==False: #this means it is agency
                 return handle_agency(branch, emp_branch_id, role_id, user_name, func, *args, **kwargs)
-    return __wrapper
+    return _wrapper
 
 
 

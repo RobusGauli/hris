@@ -8,12 +8,23 @@ from sqlalchemy.orm.exc import NoResultFound
 from hris import db_session
 
 #auth
-from hris.api.auth import can_edit_permit, permitted_to, only_admin
+from hris.api.auth import can_edit_permit, only_admin
+###
+#auth
+from hris.api.auth import can_edit_permit, allow_permission, only_admin
 ###
 from hris.models import (
     User, 
     CompanyDetail,
-    Branch
+    Branch,
+    EmployeeCategoryRank,
+    EmployeeCategory,
+    EmployeeType,
+    Employee,
+    EmployeeExtra,
+    Qualification,
+    Certification,
+    Training
 )
 
 
@@ -115,8 +126,29 @@ def get_agencies():
         return records_json_envelop(list(all_branches))
 
 
-    
+
+@api.route('/branches/<int:b_id>/employees')
+def get_employees_by_branches(b_id):
+    try:
+        employees = db_session.query(Employee).filter(Employee.employee_branch_id==b_id).filter(Employee.is_branch==True).all()
+    except NoResultFound as e:
+        return record_notfound_envelop()
+    except Exception as e:
+        return fatal_error_envelop()
+    else:
+        return records_json_envelop(list(emp.to_dict() for emp in employees))
 
 
+
+@api.route('/agencies/<int:a_id>/employees')
+def get_employees_by_agencies(a_id):
+    try:
+        employees = db_session.query(Employee).filter(Employee.employee_branch_id==a_id).filter(Employee.is_branch==False).all()
+    except NoResultFound as e:
+        return record_notfound_envelop()
+    except Exception as e:
+        return fatal_error_envelop()
+    else:
+        return records_json_envelop(list(emp.to_dict() for emp in employees))
 
 

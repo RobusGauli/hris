@@ -9,7 +9,7 @@ from hris import db_session
 from hris import engine
 
 #auth
-from hris.api.auth import can_edit_permit, allow_permission
+from hris.api.auth import can_edit_permit, allow_permission, only_admin
 ###
 from hris.models import (
     User, 
@@ -90,6 +90,7 @@ def create_employee():
     
 
 @api.route('/employees/<int:id>', methods=['PUT'])
+@only_admin
 def update_employee(id):
     '''This i iwill user the raw sql query because this would be easier to reason about'''
 
@@ -129,8 +130,8 @@ def update_employee(id):
 
 
 @api.route('/employees', methods=['GET'])
-@can_edit_permit
 def get_employees():
+    
     try:
         employees = db_session.query(Employee).filter(Employee.del_flag==False).all()
         emps = ({ 'first_name' : emp.first_name if emp.first_name else '',
@@ -156,7 +157,8 @@ def get_employees():
                   'date_of_commencement' : emp.date_of_commencement if emp.date_of_commencement else '',
                   'contract_end_date' : emp.contract_end_date if emp.contract_end_date else '',
                   'id' : emp.id if emp.id else '',
-                  'user_id' : emp.user_id if emp.user_id else ''
+                  'user_id' : emp.user_id if emp.user_id else '',
+                  'employee_branch_id' : emp.employee_branch_id if emp.employee_branch_id else ''
                                     
 
         } for emp in employees)
@@ -167,7 +169,6 @@ def get_employees():
 
 
 @api.route('/employees/<int:id>')
-@can_edit_permit
 def get_employee(id):
     try:
         emp  = db_session.query(Employee).filter(Employee.id==id).one()
@@ -199,14 +200,15 @@ def get_employee(id):
                   'date_of_commencement' : emp.date_of_commencement if emp.date_of_commencement else '',
                   'contract_end_date' : emp.contract_end_date if emp.contract_end_date else '',
                   'id' : emp.id if emp.id else '',
-                  'user_id' : emp.user_id if emp.user_id else ''
+                  'user_id' : emp.user_id if emp.user_id else '',
+                  'employee_branch_id' : emp.employee_branch_id if emp.employee_branch_id else ''
                                     
 
         })
 
 
 @api.route('/employees/<int:id>/qualifications', methods=['POST'])
-@can_edit_permit
+@only_admin
 def create_qualification_by_emp(id):
     if not request.json:
         abort(400)
@@ -230,7 +232,6 @@ def create_qualification_by_emp(id):
 
 
 @api.route('/employees/<int:id>/qualifications', methods=['GET'])
-@can_edit_permit
 def get_qualifications_by_emp(id):
     try:
         qls = db_session.query(Qualification).filter(Qualification.employee_id==id).all()
@@ -254,7 +255,7 @@ def get_qualifications_by_emp(id):
 
 
 @api.route('/employees/<int:emp_id>/qualifications/<int:q_id>', methods=['PUT'])
-@can_edit_permit
+@only_admin
 def update_qualification_by_emp(emp_id, q_id):
     if not request.json:
         abort(400)
@@ -290,7 +291,7 @@ def update_qualification_by_emp(emp_id, q_id):
 ############@@@@############
 
 @api.route('/employees/<int:id>/certifications', methods=['POST'])
-@can_edit_permit
+@only_admin
 def create_certification_by_emp(id):
     if not request.json:
         abort(400)
@@ -318,7 +319,7 @@ def create_certification_by_emp(id):
         return record_created_envelop(request.json)
 
 @api.route('/employees/<int:id>/certifications', methods=['GET'])
-@can_edit_permit
+@only_admin
 def get_certifications_by_emp(id):
     try:
         certs = db_session.query(Certification).filter(Certification.employee_id==id).all()
@@ -340,7 +341,7 @@ def get_certifications_by_emp(id):
 
 
 @api.route('/employees/<int:emp_id>/certifications/<int:c_id>', methods=['PUT'])
-@can_edit_permit
+@only_admin
 def update_certification_by_emp(emp_id, c_id):
     if not request.json:
         abort(400)
@@ -377,7 +378,7 @@ def update_certification_by_emp(emp_id, c_id):
 #######------------------__##########################
 
 @api.route('/employees/<int:id>/trainings', methods=['POST'])
-@can_edit_permit
+@only_admin
 def create_training_by_emp(id):
     if not request.json:
         abort(400)
@@ -405,7 +406,7 @@ def create_training_by_emp(id):
         return record_created_envelop(request.json)
 
 @api.route('/employees/<int:id>/trainings', methods=['GET'])
-@can_edit_permit
+@only_admin
 def get_trainings_by_emp(id):
     try:
         trs = db_session.query(Training).filter(Training.employee_id==id).all()
@@ -430,7 +431,7 @@ def get_trainings_by_emp(id):
 
 
 @api.route('/employees/<int:emp_id>/trainings/<int:t_id>', methods=['PUT'])
-@can_edit_permit
+@only_admin
 def update_training_by_emp(emp_id, t_id):
     if not request.json:
         abort(400)
@@ -467,7 +468,7 @@ def update_training_by_emp(emp_id, t_id):
 #####employee extra details endpoints
 
 @api.route('/employees/<int:id>/empextras', methods=['POST'])
-@can_edit_permit
+@only_admin
 def create_employee_extra(id):
     #cheek to see if ther is json
     if not request.json:
@@ -504,7 +505,7 @@ def create_employee_extra(id):
 
 
 @api.route('/employees/<int:id>/empextras', methods=['GET'])
-@can_edit_permit
+@only_admin
 def get_empextras_by_emp(id):
     try:
         trs = db_session.query(EmployeeExtra).filter(EmployeeExtra.employee_id==id).all()
@@ -529,7 +530,7 @@ def get_empextras_by_emp(id):
 
 
 @api.route('/employees/<int:emp_id>/empextras/<int:ex_id>', methods=['PUT'])
-@can_edit_permit
+@only_admin
 def update_empextra_by_emp(emp_id, ex_id):
     if not request.json:
         abort(400)
@@ -561,3 +562,38 @@ def update_empextra_by_emp(emp_id, ex_id):
             return fatal_error_envelop()
         else:
             return record_updated_envelop(request.json)
+
+#listing of emplloyees by branches, agencies, by individual branch and individual agencies
+
+#all the employee of divisions
+@api.route('/employees/division', methods=['GET'])
+def get_employees_of_divisions():
+    
+    try:
+        employees = db_session.query(Employee).filter(Employee.is_branch==True).all()
+    except NoResultFound as e:
+        return record_notfound_envelop()
+    except Exception as e:
+        
+        return fatal_error_envelop()
+    else:
+        return records_json_envelop(list(employee.to_dict() for employee in employees))
+
+
+
+@api.route('/employees/agency', methods=['GET'])
+def get_employees_of_agencies():
+    try:
+        employees = db_session.query(Employee).filter(Employee.is_branch==False).all()
+    except NoResultFound as e:
+        return record_notfound_envelop()
+    except Exception as e:
+        
+        return fatal_error_envelop()
+    else:
+        return records_json_envelop(list(employee.to_dict() for employee in employees))
+
+
+
+
+#

@@ -49,6 +49,16 @@ class User(Base):
     employee = relationship('Employee', uselist=False, back_populates='user')
 
 
+    def to_dict(self):
+        data = {
+            'user_name' : self.user_name if self.user_name else '',
+            
+            'role_id' : self.role_id if self.role_id else '',
+            'employee_data' : self.employee.to_dict() if self.employee else {},
+
+            'id' : self.id if self.id else ''
+        }
+        return data
 
 
 
@@ -274,6 +284,7 @@ class Employee(Base):
     photo = Column(String(500), unique=True)
     document = Column(String(500), unique=True)
 
+    is_branch = Column(Boolean, nullable=False, default=True)
     #branch_id_of_employee
     employee_branch_id = Column(Integer, ForeignKey('branches.id'), nullable=False)
     #relationship
@@ -298,6 +309,19 @@ class Employee(Base):
     certifications = relationship('Certification', back_populates='employee', cascade='all, delete, delete-orphan')
     trainings = relationship('Training', back_populates='employee', cascade='all, delete, delete-orphan')
 
+
+    def to_dict(self):
+        data = {
+            'employement_number' : self.employement_number if self.employement_number else '',
+            'first_name' : self.first_name if self.first_name else '',
+            'middle_name' : self.middle_name if self.middle_name else '',
+            'last_name' : self.last_name if self.last_name else '',
+            'address_one' : self.address_one if self.address_one else '',
+            'contact_number' : self.contact_number if self.contact_number else '',
+            'country' : self.country if self.country else '',
+            'id' : self.id if self.id else ''
+        }
+        return data
 
 class EmployeeExtra(Base):
     __tablename__ = 'employee_extra'
