@@ -128,7 +128,7 @@ def get_agencies():
 
 
 @api.route('/branches/<int:b_id>/employees')
-def get_employees_by_branches(b_id):
+def get_employees_by_branch(b_id):
     try:
         employees = db_session.query(Employee).filter(Employee.employee_branch_id==b_id).filter(Employee.is_branch==True).all()
     except NoResultFound as e:
@@ -141,7 +141,7 @@ def get_employees_by_branches(b_id):
 
 
 @api.route('/agencies/<int:a_id>/employees')
-def get_employees_by_agencies(a_id):
+def get_employees_by_agency(a_id):
     try:
         employees = db_session.query(Employee).filter(Employee.employee_branch_id==a_id).filter(Employee.is_branch==False).all()
     except NoResultFound as e:

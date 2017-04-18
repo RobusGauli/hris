@@ -32,7 +32,6 @@ from hris.api.response_envelop import (
 
 
 @api.route('/users', methods=['POST'])
-@only_admin
 def register_user():
     '''This view register the user by generating ht access token with the given role'''
     if request.args and request.args['action'] == 'register':

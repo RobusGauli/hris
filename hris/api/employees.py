@@ -58,6 +58,7 @@ def create_employee():
                   'employee_type_id', 
                   'employee_category_id',
                   'date_of_birth',
+                  'is_branch'
                   
                   'employement_number',
                   'employee_branch_id'}
@@ -595,5 +596,3 @@ def get_employees_of_agencies():
 
 
 
-
-#
