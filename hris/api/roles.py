@@ -86,7 +86,6 @@ def handle_keys_for_update_request(model, *, _exclude=None):
 
 
 @api.route('/roles', methods = ['POST'])
-@can_edit_permit
 @handle_keys_for_post_request(Role, _exclude=('id', 'updated_at', 'updated_by', 'created_at', 'created_by'))
 def create_roles():
     '''This method will create a role and assign diffenet permissions'''
@@ -102,7 +101,6 @@ def create_roles():
         return record_created_envelop(request.json)
 
 @api.route('/roles', methods=['GET'])
-@can_edit_permit
 def get_roles():
     try:
         roles = db_session.query(Role).filter(Role.role_type != 'admin').all()
@@ -117,7 +115,6 @@ def get_roles():
 
 
 @api.route('/roles/<int:r_id>', methods=['PUT'])
-@can_edit_permit
 @handle_keys_for_update_request(Role, _exclude=('id', ))
 def update_role(r_id):
     #check to see if they want to update the admin_role. refuse to change the admin_roel

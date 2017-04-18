@@ -9,7 +9,7 @@ from hris import db_session
 from hris import engine
 
 #auth
-from hris.api.auth import can_edit_permit
+from hris.api.auth import can_edit_permit, allow_permission
 ###
 from hris.models import (
     User, 
@@ -43,8 +43,9 @@ from hris.api.response_envelop import (
 
 
 @api.route('/employees', methods=['POST'])
-@can_edit_permit
+@allow_permission
 def create_employee():
+    
     if not request.json:
         abort(400)
     
@@ -57,7 +58,7 @@ def create_employee():
                   'employee_type_id', 
                   'employee_category_id',
                   'date_of_birth',
-                  'address_one',
+                  
                   'employement_number',
                   'employee_branch_id'}
     result = req_fields  - request.json.keys()
@@ -75,7 +76,7 @@ def create_employee():
 
     #now try to insert 
     try:
-        print(data)
+        
         emp = Employee(**data)
         db_session.add(emp)
         db_session.commit()
@@ -89,7 +90,6 @@ def create_employee():
     
 
 @api.route('/employees/<int:id>', methods=['PUT'])
-@can_edit_permit
 def update_employee(id):
     '''This i iwill user the raw sql query because this would be easier to reason about'''
 
@@ -155,7 +155,8 @@ def get_employees():
                   'salary_step' : emp.salary_step if emp.salary_step else '',
                   'date_of_commencement' : emp.date_of_commencement if emp.date_of_commencement else '',
                   'contract_end_date' : emp.contract_end_date if emp.contract_end_date else '',
-                  'id' : emp.id if emp.id else ''
+                  'id' : emp.id if emp.id else '',
+                  'user_id' : emp.user_id if emp.user_id else ''
                                     
 
         } for emp in employees)
@@ -197,7 +198,8 @@ def get_employee(id):
                   'salary_step' : emp.salary_step if emp.salary_step else '',
                   'date_of_commencement' : emp.date_of_commencement if emp.date_of_commencement else '',
                   'contract_end_date' : emp.contract_end_date if emp.contract_end_date else '',
-                  'id' : emp.id if emp.id else ''
+                  'id' : emp.id if emp.id else '',
+                  'user_id' : emp.user_id if emp.user_id else ''
                                     
 
         })
